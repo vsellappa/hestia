@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN" shutdownHook="DISABLE">
+    <appenders>
+        <console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </console>
+    </appenders>
+
+    <loggers>
+        <root level="ERROR">
+            <appenderRef ref="console"/>
+        </root>
+        <logger name="******* Hestia *******" level="DEBUG"/>
+        <logger name="Producer" level="INFO"/>
+        <logger name="Consumer" level="DEBUG"/>
+    </loggers>
+</configuration>
