@@ -1,0 +1,16 @@
+0. Add JMX on Producer and Consumer to specifically write/read for test data at real time
+1. Add REST service to expose the inner store of Kafka
+2. Add ways to write the Schema to Druid programatically ; Generate schema for Druid with the JSON Object.
+3. Have single way of writing JSON .,JSONSerializer/DeSerializer from Kafka ?
+
+4. Tests to do:
+a) Create TestProducer to add specific data ,
+b) Verify from queryable store if the data has been consumed
+
+5. First level :
+
+a) Add all columns to dimensions.
+b) Create a column with current time to ingest for Druid
+c) What does the time column in Druid have to be ?
+d) Druid testing - how to ?
+e) adminpassword for Superset : username : admin password:StrongPassword
