@@ -224,7 +224,7 @@ public class Producer {
                     return (JsonPath.parse(EntityUtils.toString(response.getEntity())).read("$['dataset']['data'][*]"));
                 })));
             } catch (IOException x) {
-                LOGGER.error("Exception When Retrieving Data for:|" + code + "| Exception : " + x.getCause());
+                LOGGER.warn("Exception When Retrieving Data for:|" + code + "| Exception : " + x.getCause());
             }
 
             return Collections.unmodifiableList(val);

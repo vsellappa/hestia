@@ -7,14 +7,19 @@
       "parseSpec": {
         "format": "json",
         "timestampSpec": {
-          "column": "refreshedAt",
+          "column": "timestamp",
           "format": "auto"
         },
         "dimensionsSpec": {
             "dimensions": [
                     "code"
                     ,"name"
+                    ,"description"
+                    ,"fromDate"
+                    ,"toDate"
                     ,"refreshedAt"
+                    ,"date"
+                    ,"value"
             ]
         }
       }

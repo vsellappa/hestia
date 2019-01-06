@@ -9,6 +9,9 @@ import org.junit.Test;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * Tests the External API Access.
+ */
 public class DataExtractorTest {
     private Producer.DataExtractor dataExtractor;
 
@@ -19,7 +22,7 @@ public class DataExtractorTest {
     }
 
     @Test
-    public void testJsonPath() {
+    public void testExternalAPIAccess() {
         List<JSONArray> val = dataExtractor.get("Z90210_MLPAH");
         Assert.assertNotNull(val);
 

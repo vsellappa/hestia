@@ -24,7 +24,7 @@ public class Consumer {
     private KafkaStreams streams;
 
     private final static String TOPICNAME = "USHousePrices";
-    private final static JSONArray ARRAYNAMES = new JSONArray("[code,name,description,refreshedAt,fromDate,toDate,date,value]");
+    private final static JSONArray ARRAYNAMES = new JSONArray("[timestamp,code,name,description,refreshedAt,fromDate,toDate,date,value]");
     private final static Logger LOGGER = LoggerFactory.getLogger("Consumer");
 
     public Consumer(Helper helper, CountDownLatch latch) {
@@ -47,32 +47,35 @@ public class Consumer {
     private final KafkaStreams init() {
         final StreamsBuilder builder = new StreamsBuilder();
 
-        //create a state store from the metadata topic
-        final KTable<String, String> metadata = builder.table (helper.getTopicNames().get(0)
-                ,Materialized.<String,String,KeyValueStore<Bytes, byte[]>> as("metadataTable").withKeySerde(Serdes.String()).withValueSerde(Serdes.String()));
+        final KTable<String, String> lookup = builder.table (helper.getTopicNames().get(0)
+                ,Materialized.<String,String,KeyValueStore<Bytes, byte[]>> as("lookup")
+                 .withKeySerde(Serdes.String())
+                 .withValueSerde(Serdes.String()));
 
-        //create a stream from the data topic
         final KStream<String, String> transactions = builder.stream (helper.getTopicNames().get(1)
                 ,Consumed.with(Serdes.String(),Serdes.String())
         );
 
+        //convert the string data to a new JSON Object. TODO: Make this more elegant.
         ValueJoiner<String, String, String> valueJoiner = new ValueJoiner<String, String, String>() {
             @Override
             public String apply(String key, String lookup) {
                 String[] splits = key.split(Pattern.quote("|"));
-                JSONObject jsonObject = CDL.rowToJSONObject(ARRAYNAMES, new JSONTokener(lookup + "," + splits[0] + "," + splits[1]));
-
-                LOGGER.debug("Writing to Topic : " + TOPICNAME + " Data=" + jsonObject);
+                JSONObject jsonObject = CDL.rowToJSONObject(ARRAYNAMES, new JSONTokener(System.currentTimeMillis() + "," + lookup + "," + splits[0] + "," + splits[1]));
 
                 return jsonObject.toString();
             }
         };
 
         //join the stream with the lookup table and write to a separate stream.
-        final KStream<String, String> joined = transactions.join(metadata,valueJoiner);
-        joined.to(TOPICNAME);
+        final KStream<String, String> result = transactions.join(lookup,valueJoiner);
 
-        LOGGER.info("Created Joined Stream here: " + joined);
+        //write the resulting stream to a separate topic
+        //TODO: Does this stream have to be grouped by key.
+        result.to(TOPICNAME);
+
+        LOGGER.info("Result Stream Created : " + result);
+        result.foreach((k, v) -> LOGGER.debug("Key=:" + k + " Value=" + v));
 
         return new KafkaStreams(builder.build(),getConfig());
     }
