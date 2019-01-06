@@ -203,8 +203,8 @@ public class Producer {
     }
 
     class DataExtractor {
-        private final String baseURI = "https://www.quandl.com/api/v3/datasets/ZILLOW/";
-        private final String apiKey = ".json?api_key=naxsv2gLHH-_rZ362Qge";
+        private final String baseURI = "https://www.quandl.com/api/v3/datasets/ZILLOW/.json?api_key=";
+        private final String apiKey = helper.getApiKey();
 
         protected final List<JSONArray> get(String code) {
             HttpClient client = HttpClients.createDefault();

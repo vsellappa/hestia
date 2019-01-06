@@ -56,7 +56,7 @@ public class Consumer {
                 ,Consumed.with(Serdes.String(),Serdes.String())
         );
 
-        //convert the string data to a new JSON Object. TODO: Make this more elegant.
+        //TODO: Create SerDe and use proper JSONObject's here.
         ValueJoiner<String, String, String> valueJoiner = new ValueJoiner<String, String, String>() {
             @Override
             public String apply(String key, String lookup) {

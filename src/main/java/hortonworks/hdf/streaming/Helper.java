@@ -13,12 +13,14 @@ public class Helper {
         //overwrite if present on commandline
         setBootServers(result);
         setFileLocation(result);
+        setApiKey(result);
 
         return true;
     }
 
     final String getBootServers() { return properties.getProperty("bootstrap.servers");}
     final String getFileLocation() { return properties.getProperty("file.location");}
+    final String getApiKey() { return properties.getProperty("api.key");}
 
     final ArrayList<String> getTopicNames() {
         ArrayList<String> names = new ArrayList<>(topicNames.size());
@@ -26,16 +28,12 @@ public class Helper {
         return names;
     }
 
-    private void setBootServers(Namespace result) {
-        String s = result.getString("bootstrap.servers");
-        if (s!= null && !s.isEmpty())
-            properties.setProperty("bootstrap.servers", s);
-    }
+    private void setBootServers(Namespace result) {setValue("bootstrap.servers", result);}
+    private void setFileLocation(Namespace result) {setValue("file.location", result);}
+    private void setApiKey(Namespace result) {setValue("api.key", result);}
 
-    private void setFileLocation(Namespace result) {
-        String s = result.getString("file.location");
-        if (s!= null && !s.isEmpty())
-            properties.setProperty("file.location", s);
-
+    private void setValue(String name, Namespace result) {
+        String s = result.getString(name);
+        if (s!=null && !s.isEmpty()) properties.setProperty(name,s);
     }
 }
