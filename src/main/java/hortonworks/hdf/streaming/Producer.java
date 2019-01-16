@@ -131,7 +131,7 @@ public class Producer {
             kProducer.flush();
             kProducer.close();
 
-            LOGGER.info("Closed Kafka Producer: " + kProducer.toString());
+            LOGGER.debug("Closed Kafka Producer: " + kProducer.toString());
             latch.countDown();
         }
 

@@ -1,0 +1,58 @@
+{
+  "configurations" : {
+    "core-site": {
+      "hadoop.proxyuser.root.users" : "admin",
+      "fs.trash.interval": "4320"
+    },
+    "yarn-env": {
+      "apptimelineserver_heapsize": "1024"
+    },
+    "hdfs-site": {
+      "dfs.replication": "1",
+      "dfs.namenode.safemode.threshold-pct": "0.99"
+    },
+    "druid-broker" : {
+      "druid.processing.buffer.sizeBytes" : "107374182"
+    },
+    "druid-overlord" : {
+      "druid.port" : "8095"
+    },
+    "druid-middlemanager" : {
+      "druid.port" : "8096",
+      "druid.processing.numThreads" : "3",
+      "druid.indexer.runner.javaOpts": "-server -Xmx1g -XX:MaxDirectMemorySize=5g -Duser.timezone=UTC -Dfile.encoding=UTF-8 -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Dhdp.version={{stack_version}} -Dhadoop.mapreduce.job.classloader=true"
+    },
+    "druid-historical" : {
+      "druid.processing.numThreads" : "3",
+      "druid.processing.buffer.sizeBytes" : "107374182"
+    },
+    "druid-common": {
+      "druid.storage.storageDirectory" : "/user/druid/data",
+      "druid.indexer.logs.type" : "hdfs",
+      "druid.indexer.logs.directory": "/user/druid/logs",
+      "druid.storage.type" : "hdfs",
+      "druid.metadata.storage.connector.user" : "druid",
+      "druid.metadata.storage.connector.password" : "StrongPassword",
+      "druid.metadata.storage.connector.port" : "3306",
+      "druid.metadata.storage.connector.connectURI" : "jdbc:mysql://localhost:3306/druid?createDatabaseIfNotExist=true",
+      "druid.metadata.storage.type" : "mysql",
+      "druid.extensions.loadList" : "[\"druid-datasketches\", \"druid-hdfs-storage\", \"ambari-metrics-emitter\", \"mysql-metadata-storage\"]"
+    },
+    "superset": {
+      "SECRET_KEY": "StrongPassword",
+      "SUPERSET_DATABASE_TYPE" : "mysql",
+      "SUPERSET_DATABASE_PASSWORD": "StrongPassword",
+      "SUPERSET_DATABASE_HOSTNAME" : "localhost",
+      "SUPERSET_DATABASE_PORT" : "3306",
+      "SUPERSET_WEBSERVER_PORT" : "9089"
+    },
+    "superset-env": {
+      "superset_admin_email": "a@b.c",
+      "superset_admin_firstname": "Admin",
+      "superset_admin_lastname": "Jones",
+      "superset_admin_firstname": "Admin",
+      "superset_admin_lastname": "Jones",
+      "superset_admin_password": "StrongPassword"
+    }
+  }
+}

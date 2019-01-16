@@ -15,4 +15,3 @@ c) What does the time column in Druid have to be ?
 d) Druid testing - how to ?
 e) adminpassword for Superset : username : admin password:StrongPassword
 f) https://www.quandl.com/api/v3/databases/ZILLOW/metadata?api_key=naxsv2gLHH-_rZ362Qge - Metadata as zip
-g) Install superset on local machine

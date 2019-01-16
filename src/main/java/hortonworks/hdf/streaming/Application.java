@@ -38,7 +38,7 @@ public class Application {
 
     private static String help() {
         return "/* ******************** Hestia ******************** */" +
-               "";
+               "TODO: Complete Me";
     }
 
     /**

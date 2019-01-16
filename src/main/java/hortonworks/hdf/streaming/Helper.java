@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Helper {
     private final Properties properties = new Properties();
-    private final List<String> topicNames = Arrays.asList("Metadata","Data");
+    private final List<String> topicNames = Arrays.asList("Lookup","TxnData", "USHousePrices");
 
     final boolean init(Namespace result) throws Exception {
         properties.load(getClass().getResourceAsStream("/application.properties"));
