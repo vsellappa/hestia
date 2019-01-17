@@ -1,19 +1,20 @@
 package hortonworks.hdf.streaming;
 
-import net.sourceforge.argparse4j.inf.Namespace;
 import java.util.*;
 
 public class Helper {
     private final Properties properties = new Properties();
+    private final Map<String, Object> cmdLineArgs = new HashMap<String, Object>();
     private final List<String> topicNames = Arrays.asList("Lookup","TxnData", "USHousePrices");
 
-    final boolean init(Namespace result) throws Exception {
+    final boolean init(Map<String, Object> args) throws Exception {
+        cmdLineArgs.putAll(args);
         properties.load(getClass().getResourceAsStream("/application.properties"));
 
         //overwrite if present on commandline
-        setBootServers(result);
-        setFileLocation(result);
-        setApiKey(result);
+        setBootServers();
+        setFileLocation();
+        setApiKey();
 
         return true;
     }
@@ -28,12 +29,15 @@ public class Helper {
         return names;
     }
 
-    private void setBootServers(Namespace result) {setValue("bootstrap.servers", result);}
-    private void setFileLocation(Namespace result) {setValue("file.location", result);}
-    private void setApiKey(Namespace result) {setValue("api.key", result);}
+    private void setBootServers() {setValue("bootstrap.servers");}
+    private void setFileLocation() {setValue("file.location");}
+    private void setApiKey() {setValue("api.key");}
 
-    private void setValue(String name, Namespace result) {
-        String s = result.getString(name);
-        if (s!=null && !s.isEmpty()) properties.setProperty(name,s);
+    private void setValue(String key) {
+        Object o = cmdLineArgs.get(key);
+        if (o!=null) {
+            String s = o.toString();
+            if (s != null && !s.isEmpty()) properties.setProperty(key, s);
+        }
     }
 }

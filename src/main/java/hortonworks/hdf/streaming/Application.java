@@ -57,7 +57,7 @@ public class Application {
 
         LOGGER.info("Starting");
 
-        if (helper.init(parser.parseArgs(args))) {
+        if (helper.init(parser.parseArgs(args).getAttrs())) {
             final CountDownLatch latch = new CountDownLatch(2);
 
             final Producer producer = new Producer(helper, latch);

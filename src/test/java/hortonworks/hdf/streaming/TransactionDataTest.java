@@ -2,15 +2,10 @@ package hortonworks.hdf.streaming;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.junit.Test;
 
 import java.util.Properties;
 
-/**
- * Run this test after the
- */
 public class TransactionDataTest {
-    @Test
     public void checkIfConsumerPicksThisUp() {
         Properties p = new Properties();
 

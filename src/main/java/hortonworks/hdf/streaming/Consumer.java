@@ -23,7 +23,6 @@ public class Consumer {
 
     private KafkaStreams streams;
 
-    private final static String TOPICNAME = "USHousePrices";
     private final static JSONArray ARRAYNAMES = new JSONArray("[timestamp,code,name,description,refreshedAt,fromDate,toDate,date,value]");
     private final static Logger LOGGER = LoggerFactory.getLogger("Consumer");
 
@@ -38,7 +37,7 @@ public class Consumer {
     }
 
     public final void stop() {
-        streams.close();
+        if (null!=streams) streams.close();
         latch.countDown();
 
         LOGGER.info("Closing Streams...");
@@ -72,7 +71,7 @@ public class Consumer {
 
         //write the resulting stream to a separate topic
         //TODO: Does this stream have to be grouped by key.
-        result.to(TOPICNAME);
+        result.to(helper.getTopicNames().get(2));
 
         LOGGER.info("Result Stream Created : " + result);
         result.foreach((k, v) -> LOGGER.debug("Key=:" + k + " Value=" + v));

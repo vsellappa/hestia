@@ -8,6 +8,7 @@
 ##
 ## hdp version : hdp_ver
 ## deployed services : ambari_services
+## auto-starts deployed services
 ##
 ###############################################################################
 
@@ -129,6 +130,7 @@ export recommendation_strategy="ALWAYS_APPLY_DONT_OVERRIDE_CUSTOM_VALUES"
 
 cd ~/ambari-bootstrap/deploy
 
+## get blueprint template
 getConfigurationJson
 
 printf "##INFO: Deploying HDP"

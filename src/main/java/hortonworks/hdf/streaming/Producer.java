@@ -3,8 +3,12 @@ package hortonworks.hdf.streaming;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -203,28 +207,34 @@ public class Producer {
     }
 
     class DataExtractor {
-        private final String baseURI = "https://www.quandl.com/api/v3/datasets/ZILLOW/.json?api_key=";
+        private final String baseURI = "https://www.quandl.com/api/v3/datasets/ZILLOW/";
         private final String apiKey = helper.getApiKey();
 
         protected final List<JSONArray> get(String code) {
             HttpClient client = HttpClients.createDefault();
             final List<JSONArray> val = new ArrayList<>();
 
-            HttpGet g = new HttpGet(baseURI + code + apiKey);
-            LOGGER.debug("Sending Request To: " + g.getURI());
+            HttpGet g = new HttpGet(baseURI + code + ".json?apiKey=" + apiKey);
+            LOGGER.debug("Sending Request To: " + g.getRequestLine());
 
             try {
                 val.addAll(client.execute(g, (response -> {
                     StatusLine status = response.getStatusLine();
                     HttpEntity entity = response.getEntity();
 
-                    if (status.getStatusCode() !=200 || entity == null)
-                        throw new IOException("Status Code = " + status.getStatusCode() + "|" + status.getReasonPhrase() + " Entity = " + entity);
+                    if (status.getStatusCode()!=200) {
+                        StringBuffer message = new StringBuffer();
+                        if (entity!=null) {message.append(EntityUtils.toString(entity));}
+
+                        throw new HttpResponseException(status.getStatusCode(),status.getReasonPhrase()+"|"+message);
+                    }
 
                     return (JsonPath.parse(EntityUtils.toString(response.getEntity())).read("$['dataset']['data'][*]"));
                 })));
+            } catch (HttpResponseException x) {
+                LOGGER.warn("Exception When Retrieving Data for:|" + code + "| Exception:" + x.getStatusCode() + " " + x.getMessage());
             } catch (IOException x) {
-                LOGGER.warn("Exception When Retrieving Data for:|" + code + "| Exception : " + x.getCause());
+                LOGGER.warn("Exception When Retrieving Data for:|" + code + "| Exception:" + x.getMessage());
             }
 
             return Collections.unmodifiableList(val);

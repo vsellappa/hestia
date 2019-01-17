@@ -1,43 +1,39 @@
 package hortonworks.hdf.streaming;
 
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-public class AdminClientTest {
+public class AdminClientTest extends TestSuite {
     private AdminClient client;
-    private Helper helper = new Helper();
 
-    @Before
-    private void setUp() {
-        client = AdminClient.create(getConfig());
+    @BeforeClass
+    public void beforeClass() {
+        Properties p = new Properties();
+        p.setProperty("bootstrap.servers", helper.getBootServers());
+
+        client = AdminClient.create(p);
     }
 
-    @Test
-    private void listTopics() throws InterruptedException, ExecutionException {
+    @Test(groups={"systemCheck"})
+    public void checkTopics() throws InterruptedException, ExecutionException {
         final ArrayList<String> topicNames = helper.getTopicNames();
         Set<String> clients = client.listTopics().names().get();
 
-        Assert.assertEquals("All topics present in Kafka",topicNames.size(),clients.size());
+        topicNames.forEach(name -> {
+            Assert.assertTrue(clients.contains(name), "Topic Exists in Kafka");
+        });
     }
 
-    @After
-    private void tearDown() {
+    @AfterClass
+    public void afterClass() {
         client.close();
-    }
-
-    private final Properties getConfig() {
-        Properties p = new Properties();
-        p.put("bootstrap.servers", helper.getBootServers());
-
-        return p;
     }
 }

@@ -1,36 +1,37 @@
 package hortonworks.hdf.streaming;
 
 import net.minidev.json.JSONArray;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * Tests the External API Access.
- */
-public class DataExtractorTest {
+public class DataExtractorTest extends TestSuite {
     private Producer.DataExtractor dataExtractor;
 
-    @Before
-    public void setUp() {
-        Producer p = new Producer(new Helper(), new CountDownLatch(1));
+    @BeforeClass
+    public void beforeClass() {
+        Producer p = new Producer(helper, new CountDownLatch(1));
         dataExtractor = p.new DataExtractor();
     }
 
-    @Test
-    public void testExternalAPIAccess() {
+    @Test(groups={"systemCheck"})
+    public void testValidExternalAPIAccess() {
         List<JSONArray> val = dataExtractor.get("Z90210_MLPAH");
-        Assert.assertNotNull(val);
-
-        Assert.assertEquals(39, val.size());
+        Assert.assertTrue(val.size()!=0, "Data received from External Source");
     }
 
-    @After
-    public void tearDown() {
+    @Test(groups={"systemCheck"})
+    public void testInvalidExternalAPIAccess() {
+        List<JSONArray> val = dataExtractor.get("test");
+        Assert.assertEquals(val.size(), 0, "Exception handled and no data received");
+    }
+
+    @AfterClass
+    public void afterClass() {
         this.dataExtractor = null;
     }
 }
