@@ -7,31 +7,39 @@ public class Helper {
     private final Map<String, Object> cmdLineArgs = new HashMap<String, Object>();
     private final List<String> topicNames = Arrays.asList("Lookup","TxnData", "USHousePrices");
 
-    final boolean init(Map<String, Object> args) throws Exception {
+    public Helper(String fileName) throws Exception {
+        properties.load(getClass().getResourceAsStream(fileName));
+    }
+
+    final boolean init(Map<String, Object> args) {
         cmdLineArgs.putAll(args);
-        properties.load(getClass().getResourceAsStream("/application.properties"));
 
         //overwrite if present on commandline
         setBootServers();
         setFileLocation();
         setApiKey();
 
+        setDruidServer();
+        setDruidSchema();
+
         return true;
     }
 
-    final String getBootServers() { return properties.getProperty("bootstrap.servers");}
-    final String getFileLocation() { return properties.getProperty("file.location");}
-    final String getApiKey() { return properties.getProperty("api.key");}
+    public final String getBootServers() { return properties.getProperty("bootstrap.servers");}
+    public final String getFileLocation() { return properties.getProperty("file.location");}
+    public final String getApiKey() { return properties.getProperty("api.key");}
+    public final String getDruidServer() { return properties.getProperty("druid.server");}
+    public final String getDruidSchema() { return properties.getProperty("druid.schema");}
 
-    final ArrayList<String> getTopicNames() {
-        ArrayList<String> names = new ArrayList<>(topicNames.size());
-        names.addAll(topicNames);
-        return names;
+    public final List<String> getTopicNames() {
+        return Collections.unmodifiableList(topicNames);
     }
 
     private void setBootServers() {setValue("bootstrap.servers");}
     private void setFileLocation() {setValue("file.location");}
     private void setApiKey() {setValue("api.key");}
+    private void setDruidServer() {setValue("druid.server");}
+    private void setDruidSchema() {setValue("druid.schema");}
 
     private void setValue(String key) {
         Object o = cmdLineArgs.get(key);

@@ -3,20 +3,14 @@ package hortonworks.hdf.streaming;
 import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONArray;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.errors.TopicExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 
 public class Producer {
     private final Helper helper;
@@ -32,23 +25,12 @@ public class Producer {
 
     private final static Logger LOGGER = LoggerFactory.getLogger("Producer");
 
-
     public Producer(Helper helper, CountDownLatch latch) {
         this.helper = helper;
         this.latch = latch;
     }
 
     public void start() {
-        Admin admin = new Admin();
-
-        try {
-            admin.start();
-        } catch (InterruptedException | ExecutionException x) {
-            if (!(x.getCause() instanceof TopicExistsException)) {
-                throw new RuntimeException(x.getMessage(), x);
-            }
-        }
-
         LOGGER.info("Writing Data To Topics....");
         getWriters().forEach(writer -> new Thread(writer, writer.getName()).start());
     }
@@ -58,46 +40,13 @@ public class Producer {
         getWriters().forEach(writer -> writer.stop());
     }
 
-    private ArrayList<Writers> getWriters() {
+    private List<Writers> getWriters() {
         ArrayList<Writers> writers = new ArrayList<>();
 
         writers.add(new MetadataWriter(latch));
         writers.add(new TransactionDataWriter(latch));
 
-        return writers;
-    }
-
-    //TODO: Is it a better idea to simply list the topics here and fail if topic doesnt exist on Kafka.
-    class Admin {
-        private final AdminClient client;
-
-        private Admin() {
-            this.client = AdminClient.create(getConfig());
-        }
-
-        private final Properties getConfig() {
-            Properties p = new Properties();
-            p.put("bootstrap.servers", helper.getBootServers());
-
-            return p;
-        }
-
-        //TODO: Check if the broker is reachable.
-        private final void start() throws InterruptedException, ExecutionException {
-            final ArrayList<String> topicNames = helper.getTopicNames();
-            client.deleteTopics(topicNames);
-
-            final ArrayList<NewTopic> topics = new ArrayList<>();
-            for (String topic : topicNames) {
-                topics.add(new NewTopic(topic, 1, (short) 1));
-                client.createTopics(topics);
-            }
-
-            LOGGER.info("Topics in Kafka Instance @ " + helper.getBootServers());
-            client.listTopics().names().get().forEach(name -> LOGGER.info(" |" + name + "|"));
-
-            client.close();
-        }
+        return Collections.unmodifiableList(writers);
     }
 
     interface Writers extends Runnable {
@@ -214,8 +163,8 @@ public class Producer {
             HttpClient client = HttpClients.createDefault();
             final List<JSONArray> val = new ArrayList<>();
 
-            HttpGet g = new HttpGet(baseURI + code + ".json?apiKey=" + apiKey);
-            LOGGER.debug("Sending Request To: " + g.getRequestLine());
+            HttpGet g = new HttpGet(baseURI + code + ".json?api_key=" + apiKey);
+            LOGGER.info("Sending Request To: " + g.getRequestLine());
 
             try {
                 val.addAll(client.execute(g, (response -> {
@@ -223,7 +172,7 @@ public class Producer {
                     HttpEntity entity = response.getEntity();
 
                     if (status.getStatusCode()!=200) {
-                        StringBuffer message = new StringBuffer();
+                        StringBuilder message = new StringBuilder();
                         if (entity!=null) {message.append(EntityUtils.toString(entity));}
 
                         throw new HttpResponseException(status.getStatusCode(),status.getReasonPhrase()+"|"+message);

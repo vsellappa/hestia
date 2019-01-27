@@ -13,6 +13,8 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Pattern;
@@ -23,7 +25,7 @@ public class Consumer {
 
     private KafkaStreams streams;
 
-    private final static JSONArray ARRAYNAMES = new JSONArray("[timestamp,code,name,description,refreshedAt,fromDate,toDate,date,value]");
+    private final static JSONArray ARRAYNAMES = new JSONArray("[timestamp,code,name,description,refreshedAt,fromDate,toDate,dt,price]");
     private final static Logger LOGGER = LoggerFactory.getLogger("Consumer");
 
     public Consumer(Helper helper, CountDownLatch latch) {
@@ -55,12 +57,12 @@ public class Consumer {
                 ,Consumed.with(Serdes.String(),Serdes.String())
         );
 
-        //TODO: Create SerDe and use proper JSONObject's here.
         ValueJoiner<String, String, String> valueJoiner = new ValueJoiner<String, String, String>() {
             @Override
             public String apply(String key, String lookup) {
                 String[] splits = key.split(Pattern.quote("|"));
-                JSONObject jsonObject = CDL.rowToJSONObject(ARRAYNAMES, new JSONTokener(System.currentTimeMillis() + "," + lookup + "," + splits[0] + "," + splits[1]));
+
+                JSONObject jsonObject = CDL.rowToJSONObject(ARRAYNAMES, new JSONTokener(getFormattedTime() + "," + lookup + "," + splits[0] + "," + splits[1]));
 
                 return jsonObject.toString();
             }
@@ -77,6 +79,12 @@ public class Consumer {
         result.foreach((k, v) -> LOGGER.debug("Key=:" + k + " Value=" + v));
 
         return new KafkaStreams(builder.build(),getConfig());
+    }
+
+    private final String getFormattedTime() {
+        Instant instant = Instant.now();
+
+        return DateTimeFormatter.ISO_INSTANT.format(instant);
     }
 
     private final Properties getConfig() {

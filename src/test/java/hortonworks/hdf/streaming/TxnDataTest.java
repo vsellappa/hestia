@@ -5,7 +5,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.Properties;
 
-public class TransactionDataTest {
+public class TxnDataTest {
     public void checkIfConsumerPicksThisUp() {
         Properties p = new Properties();
 

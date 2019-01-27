@@ -12,6 +12,7 @@
         </root>
         <logger name="******* Hestia *******" level="DEBUG"/>
         <logger name="Producer" level="INFO"/>
-        <logger name="Consumer" level="DEBUG"/>
+        <logger name="Consumer" level="INFO"/>
+        <logger name="DruidInterface" level="INFO"/>
     </loggers>
 </configuration>

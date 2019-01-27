@@ -15,3 +15,10 @@ c) What does the time column in Druid have to be ?
 d) Druid testing - how to ?
 e) adminpassword for Superset : username : admin password:StrongPassword
 f) https://www.quandl.com/api/v3/databases/ZILLOW/metadata?api_key=naxsv2gLHH-_rZ362Qge - Metadata as zip
+
+
+-> Programatically submit schema to druid
+    a) Create PoJo's based on schema , make these Pojo's runtime generatable.???
+    b) Use HttpClient to submit
+    c)
+curl -XPOST -H'Content-Type: application/json' -d @quickstart/tutorial/wikipedia-kafka-supervisor.json http://localhost:8090/druid/indexer/v1/supervisor

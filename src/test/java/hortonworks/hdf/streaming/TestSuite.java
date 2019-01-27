@@ -1,28 +1,35 @@
 package hortonworks.hdf.streaming;
 
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestSuite {
-    final Helper helper = new Helper();
-    final Map<String, Object> params = new HashMap<>();
+public abstract class TestSuite {
+    public static Helper helper;
+    public final Map<String, Object> cmdLineArgs = new HashMap<>();
 
-    @Parameters({"bootstrap.servers", "api.key", "file.location"})
-    @BeforeSuite
-    public void beforeSuite(String bootstrapServers,String apiKey, String fileLocation) throws Exception {
-        params.put("bootstrap.servers", bootstrapServers);
-        params.put("api.key", apiKey);
-        params.put("file.location", fileLocation);
+    @Parameters({"bootstrap.servers", "api.key", "file.location", "druid.server", "druid.schema"})
+    @BeforeSuite(alwaysRun = true)
+    public void beforeSuite(@Optional String bootstrapServers
+            , @Optional String apiKey
+            , @Optional String fileLocation
+            , @Optional String druidServer
+            , @Optional String druidSchema) throws Exception{
 
-        helper.init(params);
-    }
+        helper = new Helper("/testApplication.properties");
 
-    @AfterSuite
-    public void afterSuite() {
+        cmdLineArgs.put("bootstrap.servers", bootstrapServers);
+        cmdLineArgs.put("api.key", apiKey);
+        cmdLineArgs.put("file.location", fileLocation);
 
+        cmdLineArgs.put("druid.server", druidServer);
+        cmdLineArgs.put("druid.schema", druidSchema);
+
+        //will overwrite if present on commandline
+        helper.init(Collections.unmodifiableMap(cmdLineArgs));
     }
 }

@@ -1,0 +1,20 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="SmokeTest" verbose="1">
+    <listeners>
+        <listener class-name="hortonworks.hdf.streaming.SmokeTestListener"/>
+    </listeners>
+    <parameter name="bootstrap.servers" value="localhost:9092"/>
+    <test name="SmokeTest">
+        <groups>
+            <run>
+                <include name="smokeTest"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="hortonworks.hdf.streaming.AdminClientTest"/>
+            <class name="hortonworks.hdf.streaming.DataExtractorTest"/>
+            <class name="hortonworks.hdf.streaming.view.DruidInterfaceTest"/>
+        </classes>
+    </test>
+</suite>

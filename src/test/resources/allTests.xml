@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="AllTests" verbose="1">
+    <parameter name="bootstrap.servers" value="localhost:9092"/>
+    <test name="AllTests">
+        <classes>
+            <class name="hortonworks.hdf.streaming.AdminClientTest"/>
+            <class name="hortonworks.hdf.streaming.DataExtractorTest"/>
+            <class name="hortonworks.hdf.streaming.view.DruidInterfaceTest"/>
+        </classes>
+    </test>
+</suite>

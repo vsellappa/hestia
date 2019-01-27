@@ -2,11 +2,9 @@ package hortonworks.hdf.streaming;
 
 import org.apache.kafka.clients.admin.AdminClient;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -14,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 public class AdminClientTest extends TestSuite {
     private AdminClient client;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         Properties p = new Properties();
         p.setProperty("bootstrap.servers", helper.getBootServers());
@@ -22,9 +20,9 @@ public class AdminClientTest extends TestSuite {
         client = AdminClient.create(p);
     }
 
-    @Test(groups={"systemCheck"})
+    @Test(groups={"smokeTest"})
     public void checkTopics() throws InterruptedException, ExecutionException {
-        final ArrayList<String> topicNames = helper.getTopicNames();
+        final List<String> topicNames = helper.getTopicNames();
         Set<String> clients = client.listTopics().names().get();
 
         topicNames.forEach(name -> {
@@ -32,8 +30,8 @@ public class AdminClientTest extends TestSuite {
         });
     }
 
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void afterClass() {
-        client.close();
+        client = null;
     }
 }

@@ -1,7 +1,7 @@
 {
   "type": "kafka",
   "dataSchema": {
-    "dataSource": "USHousePrices",
+    "dataSource": "TestSource",
     "parser": {
       "type": "string",
       "parseSpec": {
@@ -11,16 +11,16 @@
           "format": "auto"
         },
         "dimensionsSpec": {
-            "dimensions": [
-                    "code"
-                    ,"name"
-                    ,"description"
-                    ,"fromDate"
-                    ,"toDate"
-                    ,"refreshedAt"
-                    ,"date"
-                    ,"value"
-            ]
+          "dimensions": [
+            "code"
+          ,"name"
+          ,"description"
+          ,"fromDate"
+          ,"toDate"
+          ,"refreshedAt"
+          ,"date"
+          ,"value"
+          ]
         }
       }
     },
@@ -37,7 +37,7 @@
     "reportParseExceptions": false
   },
   "ioConfig": {
-    "topic": "USHousePrices",
+    "topic": "testTopic",
     "replicas": 2,
     "taskDuration": "PT10M",
     "completionTimeout": "PT20M",
